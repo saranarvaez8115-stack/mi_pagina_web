@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyMate - Tu asistente de estudio</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        header {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 38px;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            font-size: 17px;
+        }
+
+        nav {
+            background: white;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        nav button {
+            border: none;
+            background: #eef2ff;
+            color: #4338ca;
+            padding: 10px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        nav button:hover {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .welcome {
+            background: white;
+            padding: 30px;
+            border-radius: 18px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+        }
+
+        .welcome h2 {
+            color: #4f46e5;
+            margin-bottom: 10px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+            color: #4f46e5;
+        }
+
+        .number {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .content-box {
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+        }
+
+        .btn {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 8px;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background: #3730a3;
+        }
+
+        .task {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+            border-left: 5px solid #4f46e5;
+        }
+
+        .task.completed {
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+
+        .subject {
+            display: inline-block;
+            background: #eef2ff;
+            color: #4338ca;
+            padding: 8px 12px;
+            border-radius: 10px;
+            margin: 5px;
+            font-weight: bold;
+        }
+
+        .timer {
+            text-align: center;
+            font-size: 70px;
+            font-weight: bold;
+            color: #4f46e5;
+            margin: 25px;
+        }
+
+        .timer-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: #eef2ff;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .progress-container {
+            background: #e5e7eb;
+            height: 25px;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            transition: 0.5s;
+        }
+
+        footer {
+            text-align: center;
+            background: #111827;
+            color: white;
+            padding: 25px;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 30px;
+            }
+
+            .timer {
+                font-size: 50px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>📚 StudyMate</h1>
+    <p>Tu asistente personal para estudiar mejor</p>
+</header>
+
+<nav>
+    <button onclick="mostrarSeccion('inicio')">🏠 Inicio</button>
+    <button onclick="mostrarSeccion('materias')">📚 Materias</button>
+    <button onclick="mostrarSeccion('tareas')">📝 Tareas</button>
+    <button onclick="mostrarSeccion('pomodoro')">⏱️ Pomodoro</button>
+    <button onclick="mostrarSeccion('notas')">🧮 Notas</button>
+    <button onclick="mostrarSeccion('estadisticas')">📊 Estadísticas</button>
+</nav>
+
+<div class="container">
+
+    <!-- INICIO -->
+    <section id="inicio" class="section active">
+
+        <div class="welcome">
+            <h2>👋 ¡Bienvenido a StudyMate!</h2>
+            <p>
+                Organiza tus estudios, controla tus tareas,
+                calcula tus notas y mejora tu productividad.
+            </p>
+        </div>
+
+        <div class="cards">
+
+            <div class="card">
+                <h3>📚 Materias</h3>
+                <div class="number" id="totalMaterias">5</div>
+                <p>Materias registradas</p>
+            </div>
+
+            <div class="card">
+                <h3>📝 Tareas</h3>
+                <div class="number" id="totalTareas">0</div>
+                <p>Tareas pendientes</p>
+            </div>
+
+            <div class="card">
+                <h3>✅ Completadas</h3>
+                <div class="number" id="tareasCompletadas">0</div>
+                <p>Tareas terminadas</p>
+            </div>
+
+            <div class="card">
+                <h3>🎯 Progreso</h3>
+                <div class="number" id="porcentaje">0%</div>
+                <p>Progreso académico</p>
+            </div>
+
+        </div>
+
+        <div class="content-box">
+            <h2>📌 ¿Qué puedes hacer?</h2>
+            <br>
+            <p>✔ Organizar tus materias.</p>
+            <br>
+            <p>✔ Crear y completar tareas.</p>
+            <br>
+            <p>✔ Utilizar el método Pomodoro.</p>
+            <br>
+            <p>✔ Calcular tus notas.</p>
+            <br>
+            <p>✔ Revisar tu progreso.</p>
+        </div>
+
+    </section>
+
+    <!-- MATERIAS -->
+    <section id="materias" class="section">
+
+        <div class="content-box">
+            <h2>📚 Mis materias</h2>
+            <br>
+
+            <div id="listaMaterias">
+                <span class="subject">📐 Matemáticas</span>
+                <span class="subject">🔬 Ciencias</span>
+                <span class="subject">💻 Tecnología</span>
+                <span class="subject">📖 Español</span>
+                <span class="subject">🌎 Inglés</span>
+            </div>
+        </div>
+
+        <div class="content-box">
+            <h2>➕ Agregar materia</h2>
+
+            <input type="text" id="nuevaMateria"
+                   placeholder="Ejemplo: Historia">
+
+            <button class="btn" onclick="agregarMateria()">
+                Agregar materia
+            </button>
+        </div>
+
+    </section>
+
+    <!-- TAREAS -->
+    <section id="tareas" class="section">
+
+        <div class="content-box">
+            <h2>📝 Mis tareas</h2>
+
+            <input type="text" id="nombreTarea"
+                   placeholder="Nombre de la tarea">
+
+            <input type="date" id="fechaTarea">
+
+            <button class="btn" onclick="agregarTarea()">
+                ➕ Agregar tarea
+            </button>
+
+            <div id="listaTareas"></div>
+        </div>
+
+    </section>
+
+    <!-- POMODORO -->
+    <section id="pomodoro" class="section">
+
+        <div class="content-box">
+
+            <h2>⏱️ Temporizador Pomodoro</h2>
+
+            <p>
+                Estudia durante 25 minutos y después toma
+                un descanso de 5 minutos.
+            </p>
+
+            <div class="timer" id="timer">
+                25:00
+            </div>
+
+            <div class="timer-buttons">
+                <button class="btn" onclick="iniciarTimer()">
+                    ▶ Iniciar
+                </button>
+
+                <button class="btn" onclick="pausarTimer()">
+                    ⏸ Pausar
+                </button>
+
+                <button class="btn" onclick="reiniciarTimer()">
+                    🔄 Reiniciar
+                </button>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- NOTAS -->
+    <section id="notas" class="section">
+
+        <div class="content-box">
+
+            <h2>🧮 Calculadora de notas</h2>
+
+            <p>
+                Ingresa tres notas para calcular tu promedio.
+            </p>
+
+            <input type="number" id="nota1"
+                   min="0" max="5" step="0.1"
+                   placeholder="Nota 1">
+
+            <input type="number" id="nota2"
+                   min="0" max="5" step="0.1"
+                   placeholder="Nota 2">
+
+            <input type="number" id="nota3"
+                   min="0" max="5" step="0.1"
+                   placeholder="Nota 3">
+
+            <button class="btn" onclick="calcularNota()">
+                🧮 Calcular promedio
+            </button>
+
+            <div id="resultadoNota" class="result">
+                El resultado aparecerá aquí.
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- ESTADISTICAS -->
+    <section id="estadisticas" class="section">
+
+        <div class="content-box">
+
+            <h2>📊 Mi progreso</h2>
+
+            <br>
+
+            <p>Progreso de tareas:</p>
+
+            <div class="progress-container">
+                <div class="progress" id="barraProgreso"></div>
+            </div>
+
+            <br>
+
+            <p id="textoProgreso">
+                Todavía no tienes tareas registradas.
+            </p>
+
+        </div>
+
+        <div class="content-box">
+
+            <h2>💡 Consejos para estudiar</h2>
+
+            <br>
+
+            <p>🎯 Establece objetivos claros.</p>
+            <br>
+
+            <p>📵 Evita las distracciones.</p>
+            <br>
+
+            <p>⏱️ Utiliza sesiones de estudio cortas.</p>
+            <br>
+
+            <p>💧 Mantente hidratado.</p>
+            <br>
+
+            <p>😴 Duerme lo suficiente.</p>
+
+        </div>
+
+    </section>
+
+</div>
+
+<footer>
+    <p>📚 StudyMate © 2026</p>
+    <p>Proyecto académico de programación web</p>
+</footer>
+
+
+<script>
+
+    // CAMBIAR ENTRE SECCIONES
+    function mostrarSeccion(id) {
+
+        let secciones = document.querySelectorAll(".section");
+
+        secciones.forEach(function(seccion) {
+            seccion.classList.remove("active");
+        });
+
+        document.getElementById(id).classList.add("active");
+    }
+
+
+    // AGREGAR MATERIAS
+    function agregarMateria() {
+
+        let input = document.getElementById("nuevaMateria");
+        let nombre = input.value.trim();
+
+        if (nombre === "") {
+            alert("Escribe el nombre de la materia.");
+            return;
+        }
+
+        let lista = document.getElementById("listaMaterias");
+
+        let materia = document.createElement("span");
+
+        materia.className = "subject";
+        materia.textContent = "📘 " + nombre;
+
+        lista.appendChild(materia);
+
+        input.value = "";
+
+        actualizarMaterias();
+    }
+
+
+    function actualizarMaterias() {
+
+        let cantidad =
+            document.querySelectorAll(".subject").length;
+
+        document.getElementById("totalMaterias")
+            .textContent = cantidad;
+    }
+
+
+    // AGREGAR TAREAS
+    let tareas = 0;
+    let completadas = 0;
+
+
+    function agregarTarea() {
+
+        let nombre =
+            document.getElementById("nombreTarea").value.trim();
+
+        let fecha =
+            document.getElementById("fechaTarea").value;
+
+        if (nombre === "") {
+            alert("Escribe el nombre de la tarea.");
+            return;
+        }
+
+        tareas++;
+
+        let lista = document.getElementById("listaTareas");
+
+        let tarea = document.createElement("div");
+
+        tarea.className = "task";
+
+        tarea.innerHTML = `
+            <div>
+                <strong>${nombre}</strong>
+                <br>
+                <small>📅 ${fecha || "Sin fecha"}</small>
+            </div>
+
+            <button class="btn"
+                    onclick="completarTarea(this)">
+                ✅
+            </button>
+        `;
+
+        lista.appendChild(tarea);
+
+        document.getElementById("nombreTarea").value = "";
+        document.getElementById("fechaTarea").value = "";
+
+        actualizarEstadisticas();
+    }
+
+
+    function completarTarea(boton) {
+
+        let tarea = boton.parentElement;
+
+        if (!tarea.classList.contains("completed")) {
+
+            tarea.classList.add("completed");
+
+            completadas++;
+
+            actualizarEstadisticas();
+        }
+    }
+
+
+    function actualizarEstadisticas() {
+
+        document.getElementById("totalTareas")
+            .textContent = tareas - completadas;
+
+        document.getElementById("tareasCompletadas")
+            .textContent = completadas;
+
+        let porcentaje = 0;
+
+        if (tareas > 0) {
+            porcentaje =
+                Math.round((completadas / tareas) * 100);
+        }
+
+        document.getElementById("porcentaje")
+       .textContent = porcentaje + "%";
+
+        document.getElementById("barraProgreso")
+            .style.width = porcentaje + "%";
+
+        document.getElementById("textoProgreso")
+            .textContent =
+            "Has completado el " +
+            porcentaje +
+            "% de tus tareas.";
+    }
+
+
+    // CALCULADORA DE NOTAS
+    function calcularNota() {
+
+        let n1 =
+            parseFloat(document.getElementById("nota1").value);
+
+        let n2 =
+            parseFloat(document.getElementById("nota2").value);
+
+        let n3 =
+            parseFloat(document.getElementById("nota3").value);
+
+        if (isNaN(n1) || isNaN(n2) || isNaN(n3)) {
+
+            document.getElementById("resultadoNota")
+                .textContent =
+                "⚠️ Ingresa las tres notas.";
+
+            return;
+        }
+
+        let promedio = (n1 + n2 + n3) / 3;
+
+        promedio = promedio.toFixed(2);
+
+        let mensaje;
+
+        if (promedio >= 3) {
+            mensaje = "✅ ¡Aprobaste!";
+        } else {
+            mensaje = "📚 Necesitas seguir estudiando.";
+        }
+
+        document.getElementById("resultadoNota")
+            .textContent =
+            "Tu promedio es " +
+            promedio +
+            ". " +
+            mensaje;
+    }
+
+
+    // TEMPORIZADOR POMODORO
+    let tiempo = 25 * 60;
+    let intervalo = null;
+
+
+    function mostrarTiempo() {
+
+        let minutos = Math.floor(tiempo / 60);
+        let segundos = tiempo % 60;
+
+        minutos = minutos.toString().padStart(2, "0");
+        segundos = segundos.toString().padStart(2, "0");
+
+        document.getElementById("timer")
+            .textContent =
+            minutos + ":" + segundos;
+    }
+
+
+    function iniciarTimer() {
+
+        if (intervalo !== null) {
+            return;
+        }
+
+        intervalo = setInterval(function() {
+
+            if (tiempo > 0) {
+
+                tiempo--;
+
+                mostrarTiempo();
+
+            } else {
+
+                clearInterval(intervalo);
+
+                intervalo = null;
+
+                alert("🎉 ¡Terminaste tu sesión de estudio!");
+
+            }
+
+        }, 1000);
+    }
+
+
+    function pausarTimer() {
+
+        clearInterval(intervalo);
+
+        intervalo = null;
+    }
+
+
+    function reiniciarTimer() {
+
+        clearInterval(intervalo);
+
+        intervalo = null;
+
+        tiempo = 25 * 60;
+
+        mostrarTiempo();
+    }
+
+
+    // INICIALIZAR
+    mostrarTiempo();
+    actualizarMaterias();
+
+</script>
+
+</body>
+</html>
